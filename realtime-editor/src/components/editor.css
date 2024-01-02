@@ -1,0 +1,284 @@
+.editorWrapper {
+  position: relative;
+  height: 100%;
+  width: calc(100vw - 250px);
+  overflow: hidden;
+  background: #282a36;
+}
+
+.codeWrapper {
+  min-height: calc(100vh - 20px);
+
+  background: #282a36;
+}
+
+.CodeMirror {
+  min-height: calc(100vh - 62px);
+  width: 100%;
+  font-size: 20px;
+  line-height: 1.6;
+  padding-top: 10px;
+}
+
+.console {
+  overflow-x: hidden;
+  height: 100%;
+  width: 90%;
+}
+
+.consoleBtn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 12;
+}
+
+.outputConsole {
+  width: 90%;
+  height: 50%;
+  background-color: #34374ad3;
+  border-radius: 12px;
+  padding: 12px;
+  color: #fff;
+  border: none;
+  outline: none;
+}
+
+.consoleTitle {
+  color: #fff;
+  margin: 60px 0 10px 0;
+}
+
+.runBtn {
+  position: absolute;
+  top: 12px;
+  right: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #4aee88;
+  color: #fff;
+  padding: 5px 15px;
+  font-size: large;
+  font-weight: 700;
+  border: none;
+  gap: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+}
+
+.runBtn:hover {
+  background-color: #4aee88d3;
+  transition: all 0.3s ease;
+}
+
+.runBtn:active {
+  background-color: #4aee88d3;
+  transition: all 0.3s ease;
+  transform: scale(0.98);
+}
+
+.dropdown {
+  opacity: 0;
+  position: absolute;
+  z-index: 12;
+  top: 12px;
+  right: 180px;
+  padding: 5px 15px;
+  font-size: large;
+  font-weight: 700;
+  border: none;
+  gap: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+}
+
+.pointerWrapper {
+  position: relative;
+  width: max-content;
+}
+
+.borderRight {
+  border-right: 5px solid red;
+}
+
+.cursor-text {
+  background: red;
+  color: #fff;
+}
+
+.pointer {
+  border-bottom: 2px solid red;
+  position: absolute;
+  top: 26px;
+  background: rosybrown;
+  padding: 0 5px;
+  border-radius: 7px;
+  z-index: 12;
+}
+
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.resizer {
+  width: 3px;
+  top: 0;
+  right: 0;
+  cursor: col-resize;
+  height: 100%;
+  position: absolute;
+  background-color: #42b362;
+}
+
+.sidebar {
+  height: 100vh;
+  width: 300px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.wrapper {
+  border-radius: 5px;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.resizable-box {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  border-left: 2px solid red;
+  background: #1c1e29;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.resizer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+.rr {
+  cursor: col-resize;
+  height: 100%;
+  right: 0;
+  top: 0;
+  width: 5px;
+}
+
+.rt {
+  cursor: row-resize;
+  height: 5px;
+  left: 0;
+  top: 0;
+  width: 100%;
+}
+
+.rb {
+  cursor: row-resize;
+  height: 5px;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+.rl {
+  cursor: col-resize;
+  height: 100%;
+  left: 0;
+  top: 0;
+  width: 5px;
+}
+
+/* mobile responsive */
+
+@media (max-width: 768px) {
+  .editorWrapper {
+    width: 100%;
+    height: 100vh;
+  }
+
+  .codeWrapper {
+    margin-top: 40px;
+  }
+
+  .console {
+    flex-direction: column;
+    width: 90%;
+  }
+
+  .inputConsole {
+    width: 90%;
+    height: 20%;
+  }
+
+  .timeDetails {
+    display: flex;
+    flex: wrap;
+    align-items: center;
+    justify-content: space-between;
+    color: wheat;
+  }
+
+  .timeDetails > p {
+    margin: 4px;
+    padding: 4px;
+    border: 2px solid #4aee88;
+    border-radius: 5px;
+  }
+
+  .dropdown1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    color: #fff;
+    border: 1px solid #4aee88;
+    background-color: #1c1e29;
+    opacity: 1;
+    width: 80px;
+    position: absolute;
+    z-index: 10;
+    top: 12px;
+    right: 180px;
+    padding: 5px 15px;
+    font-size: large;
+    font-weight: 700;
+
+    border-radius: 5px;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .outputConsole {
+    width: 90%;
+    margin-right: 12px;
+    height: 30%;
+    color: white;
+  }
+
+  .resizable-box {
+  }
+
+  .sidebar {
+    height: 40vh;
+    width: 100%;
+    position: absolute;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    top: 60vh;
+  }
+}
