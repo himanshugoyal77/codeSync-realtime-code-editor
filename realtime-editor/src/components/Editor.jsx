@@ -293,7 +293,7 @@ const Editor = ({ socketRef, roomId }) => {
       setStatus("");
       setJobDetails(null);
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/run`,
+        `codesync-realtime-code-editor-production.up.railway.app/api/run`,
         {
           code: wrCode,
           language,
@@ -306,7 +306,7 @@ const Editor = ({ socketRef, roomId }) => {
         let intervalId;
         intervalId = setInterval(async () => {
           const { data: dataRes } = await axios.get(
-            `${process.env.REACT_APP_BACKEND_URL}/status?id=${jobId}`
+            `codesync-realtime-code-editor-production.up.railway.app/status?id=${jobId}`
           );
           console.log("dataRes", dataRes);
           const { success, output: resOutput } = dataRes;
