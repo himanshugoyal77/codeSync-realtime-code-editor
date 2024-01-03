@@ -24,7 +24,6 @@ import ArrowDown from "../icons/ArrowDown";
 import { useNavigate } from "react-router-dom";
 import stubs from "../defaultS/tubs";
 import moment from "moment";
-import { set } from "mongoose";
 
 const Editor = ({ socketRef, roomId }) => {
   const editorRef = useRef(null);
