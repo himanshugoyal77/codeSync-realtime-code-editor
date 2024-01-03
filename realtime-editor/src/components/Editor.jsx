@@ -24,6 +24,7 @@ import ArrowDown from "../icons/ArrowDown";
 import { useNavigate } from "react-router-dom";
 import stubs from "../defaultS/tubs";
 import moment from "moment";
+import { set } from "mongoose";
 
 const Editor = ({ socketRef, roomId }) => {
   const editorRef = useRef(null);
@@ -37,6 +38,7 @@ const Editor = ({ socketRef, roomId }) => {
   const [status, setStatus] = useState("");
   const [jobId, setJobId] = useState("");
   const [jobDetails, setJobDetails] = useState(null);
+  const [time, setTime] = useState(null);
   const typingRef = useRef(null);
   const cursorRef = useRef(0);
 
@@ -284,6 +286,7 @@ const Editor = ({ socketRef, roomId }) => {
     }
   }, [language, output]);
 
+  // run code from my server
   const executeCode = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -293,7 +296,7 @@ const Editor = ({ socketRef, roomId }) => {
       setStatus("");
       setJobDetails(null);
       const response = await axios.post(
-        `codesync-realtime-code-editor-production.up.railway.app/api/run`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/run`,
         {
           code: wrCode,
           language,
@@ -306,7 +309,7 @@ const Editor = ({ socketRef, roomId }) => {
         let intervalId;
         intervalId = setInterval(async () => {
           const { data: dataRes } = await axios.get(
-            `codesync-realtime-code-editor-production.up.railway.app/status?id=${jobId}`
+            `${process.env.REACT_APP_BACKEND_URL}/status?id=${jobId}`
           );
           console.log("dataRes", dataRes);
           const { success, output: resOutput } = dataRes;
@@ -329,6 +332,63 @@ const Editor = ({ socketRef, roomId }) => {
       setError(true);
       setOutput(e.response.data.output.stderr);
     } finally {
+      setLoading(false);
+    }
+  };
+
+  // run code from judge0 api
+  const executeCodeJudge0 = async (e) => {
+    const options = {
+      method: "POST",
+      url: "https://judge0-ce.p.rapidapi.com/submissions",
+      params: {
+        base64_encoded: "true",
+        fields: "*",
+      },
+      headers: {
+        "content-type": "application/json",
+        "Content-Type": "application/json",
+        "X-RapidAPI-Key": "dd52b6c22amsh14abec8837003cap10e8f7jsnc8a3530dc0a9",
+        "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
+      },
+      data: {
+        language_id: language === "js" ? 63 : language === "py" ? 71 : 54,
+        source_code: btoa(wrCode),
+        stdin: "SnVkZ2Uw",
+      },
+    };
+
+    try {
+      setLoading(true);
+      const response = await axios.request(options);
+      const { token } = response.data;
+      console.log("token", token);
+
+      setTimeout(async () => {
+        const { data: dataRes } = await axios.get(
+          `https://judge0-ce.p.rapidapi.com/submissions/${token}`,
+          {
+            headers: {
+              "X-RapidAPI-Key":
+                "dd52b6c22amsh14abec8837003cap10e8f7jsnc8a3530dc0a9",
+              "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
+            },
+          }
+        );
+        console.log("dataRes", dataRes);
+        const { status, stdout, stderr } = dataRes;
+        if (status.id === 3) {
+          setStatus("completed");
+          setTime(dataRes.time);
+          setLoading(false);
+          setOutput(stdout);
+        } else if (status.id === 5) {
+          setStatus("completed");
+          setOutput(stderr);
+        }
+      }, 1000);
+    } catch (error) {
+      console.error(error);
       setLoading(false);
     }
   };
@@ -361,7 +421,10 @@ const Editor = ({ socketRef, roomId }) => {
       <button className="consoleBtn" onClick={() => setSideBar(!sideBar)}>
         {sideBar ? <Hamburger /> : <Cancel />}
       </button>
-      <button onClick={(e) => executeCode(e)} className="consoleBtn runBtn">
+      <button
+        onClick={(e) => executeCodeJudge0(e)}
+        className="consoleBtn runBtn"
+      >
         {loading ? <Pause /> : <Run />}
         {loading ? "Running" : "Run"}
       </button>
@@ -417,16 +480,22 @@ const Editor = ({ socketRef, roomId }) => {
               >
                 {status}
               </p>
-              <p className="timeDetails">{renderTimeDetails()}</p>
-              <textarea
-                readOnly
-                value={output}
-                placeholder="Output will be displayed here"
-                className="outputConsole"
-                style={{
-                  color: error ? "red" : "white",
-                }}
-              ></textarea>
+              <p className="timeDetails">
+                {time && `Execution Time: ${time}s`}
+              </p>
+              {loading ? (
+                <CirclesWithBar />
+              ) : (
+                <textarea
+                  readOnly
+                  value={output}
+                  placeholder="Output will be displayed here"
+                  className="outputConsole"
+                  style={{
+                    color: error ? "red" : "white",
+                  }}
+                ></textarea>
+              )}
             </div>
           </div>
         </div>
