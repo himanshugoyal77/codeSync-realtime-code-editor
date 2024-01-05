@@ -317,7 +317,7 @@ const Editor = ({ socketRef, roomId, onCodeChange }) => {
       setCode(stubs[language]);
       emitUtils();
     }
-  }, [language, output]);
+  }, [language]);
 
   // run code from my server
   const executeCode = async (e) => {
@@ -394,6 +394,9 @@ const Editor = ({ socketRef, roomId, onCodeChange }) => {
 
     try {
       setLoading(true);
+      setOutput("");
+      setStatus("");
+      setTime(null);
       const response = await axios.request(options);
       const { token } = response.data;
       console.log("token", token);
