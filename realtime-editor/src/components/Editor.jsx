@@ -297,14 +297,15 @@ const Editor = ({ socketRef, roomId, onCodeChange }) => {
   }, [socketRef.current]);
 
   const emitUtils = (e) => {
-    socketRef.current.emit("UTILS", {
-      roomId,
-      language,
-      error,
-      mode,
-      loading,
-      output,
-    });
+    if (socketRef.current)
+      socketRef.current.emit("UTILS", {
+        roomId,
+        language,
+        error,
+        mode,
+        loading,
+        output,
+      });
   };
 
   useEffect(() => {
@@ -313,11 +314,16 @@ const Editor = ({ socketRef, roomId, onCodeChange }) => {
     else if (language === "py") setMode("python");
     else if (language === "cpp") setMode("clike");
     if (socketRef.current) {
-      editorRef.current.setValue(stubs[language]);
-      setCode(stubs[language]);
-      emitUtils();
+      if ((wrCode && wrCode.includes("Hello World!")) || wrCode === "") {
+        editorRef.current.setValue(stubs[language]);
+        setCode(stubs[language]);
+      }
     }
   }, [language]);
+
+  useEffect(() => {
+    emitUtils();
+  }, [output]);
 
   // run code from my server
   const executeCode = async (e) => {
@@ -394,7 +400,7 @@ const Editor = ({ socketRef, roomId, onCodeChange }) => {
 
     try {
       setLoading(true);
-      setOutput("");
+
       setStatus("");
       setTime(null);
       const response = await axios.request(options);
@@ -419,8 +425,10 @@ const Editor = ({ socketRef, roomId, onCodeChange }) => {
           setTime(dataRes.time);
           setLoading(false);
           setOutput(stdout);
-        } else if (status.id === 5) {
+        } else {
           setStatus("completed");
+          setTime(dataRes.time);
+          setLoading(false);
           setOutput(stderr);
         }
       }, 1000);
