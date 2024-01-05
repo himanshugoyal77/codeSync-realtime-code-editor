@@ -86,6 +86,7 @@ const Editor = ({ socketRef, roomId, onCodeChange }) => {
         const code = instance.getValue();
 
         onCodeChange(code);
+        // setCode(code);
 
         if (origin !== "setValue") {
           socketRef.current.emit(ACTIONS.CODE_CHANGE, {
@@ -196,8 +197,10 @@ const Editor = ({ socketRef, roomId, onCodeChange }) => {
     if (socketRef.current) {
       // get current code ...
       socketRef.current.on(ACTIONS.CODE_CHANGE, ({ code, username }) => {
-        editorRef.current.setValue(code);
-        setCode(code);
+        if (code) {
+          editorRef.current.setValue(code);
+          setCode(code);
+        }
       });
 
       socketRef.current.on(
