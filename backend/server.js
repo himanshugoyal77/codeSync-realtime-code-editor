@@ -136,7 +136,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on(ACTIONS.SYNC_CODE, ({ code, socketId }) => {
-    io.to(socketId).emit(ACTIONS.SYNC_CODE, { code });
+    io.to(socketId).emit(ACTIONS.CODE_CHANGE, { code });
   });
 
   socket.on("Typer", ({ roomId, lineNo }) => {
