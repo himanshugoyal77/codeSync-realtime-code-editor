@@ -85,7 +85,7 @@ const Editor = ({ socketRef, roomId, onCodeChange }) => {
         const code = instance.getValue();
 
         onCodeChange(code);
-        // setCode(code);
+        setCode(code);
 
         if (origin !== "setValue") {
           socketRef.current.emit(ACTIONS.CODE_CHANGE, {
@@ -371,6 +371,7 @@ const Editor = ({ socketRef, roomId, onCodeChange }) => {
 
   // run code from judge0 api
   const executeCodeJudge0 = async (e) => {
+    console.log("wrCode", wrCode);
     const options = {
       method: "POST",
       url: "https://judge0-ce.p.rapidapi.com/submissions",
