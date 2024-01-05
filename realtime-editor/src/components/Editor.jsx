@@ -123,7 +123,7 @@ const Editor = ({ socketRef, roomId, onCodeChange }) => {
       socketRef.current.off("connect_failed");
       socketRef.current.off("Typer");
     };
-  }, [mode]);
+  }, []);
 
   useEffect(() => {
     const resizableElement = refBox.current;
