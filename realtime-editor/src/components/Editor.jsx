@@ -24,8 +24,9 @@ import ArrowDown from "../icons/ArrowDown";
 import { useNavigate } from "react-router-dom";
 import stubs from "../defaultS/tubs";
 import moment from "moment";
+import { set } from "mongoose";
 
-const Editor = ({ socketRef, roomId }) => {
+const Editor = ({ socketRef, roomId, onCodeChange }) => {
   const editorRef = useRef(null);
   const [sideBar, setSideBar] = useState(true);
   const [language, setLanguage] = useState(null);
@@ -45,6 +46,22 @@ const Editor = ({ socketRef, roomId }) => {
   const refTop = useRef(null);
   const refLeft = useRef(null);
   const reactNavigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (
+      navigator.userAgent.match(/Android/i) ||
+      navigator.userAgent.match(/webOS/i) ||
+      navigator.userAgent.match(/iPhone/i) ||
+      navigator.userAgent.match(/iPad/i) ||
+      navigator.userAgent.match(/iPod/i) ||
+      navigator.userAgent.match(/BlackBerry/i) ||
+      navigator.userAgent.match(/Windows Phone/i)
+    ) {
+      setIsMobile(true);
+    } else {
+    }
+  }, []);
 
   useEffect(() => {
     async function init() {
@@ -68,7 +85,7 @@ const Editor = ({ socketRef, roomId }) => {
         const { origin } = changes;
         const code = instance.getValue();
 
-        setCode(code);
+        onCodeChange(code);
 
         if (origin !== "setValue") {
           socketRef.current.emit(ACTIONS.CODE_CHANGE, {
@@ -101,6 +118,10 @@ const Editor = ({ socketRef, roomId }) => {
 
     return () => {
       editorRef.current.toTextArea();
+      socketRef.current.off(ACTIONS.CODE_CHANGE);
+      socketRef.current.off("connect_error");
+      socketRef.current.off("connect_failed");
+      socketRef.current.off("Typer");
     };
   }, [mode]);
 
@@ -199,7 +220,8 @@ const Editor = ({ socketRef, roomId }) => {
         const CodeMirrorCode =
           document.getElementsByClassName("CodeMirror-code")[0];
         const CodeMirrorLine =
-          CodeMirrorCode.childNodes[lineNo].childNodes[1].childNodes[0];
+          CodeMirrorCode?.childNodes[lineNo]?.childNodes[1]?.childNodes[0];
+        if (CodeMirrorLine === undefined) return;
         // space creates a new child node
         let textLength = 0;
         const numOfchild = CodeMirrorLine.childNodes.length;
@@ -234,8 +256,7 @@ const Editor = ({ socketRef, roomId }) => {
           const pointer = document.createElement("div");
           pointer.className = "pointer";
 
-          typingRef.current = username;
-          pointer.innerHTML = typingRef.current;
+          pointer.textContent = username;
           if (fixedLine.length === undefined) {
             fixedLine.appendChild(pointer);
             pointer.style.left = `${textLength * 10}px`;
@@ -247,19 +268,30 @@ const Editor = ({ socketRef, roomId }) => {
           if (prevPointer) {
             prevPointer.remove();
           }
-          typingRef.current = "You";
           CodeMirrorLine.classList.add("pointerWrapper");
-          const pointer = document.createElement("div");
-          pointer.className = "pointer";
-          pointer.innerHTML = typingRef.current;
           if (fixedLine.length === undefined) {
-            fixedLine.appendChild(pointer);
-            pointer.style.left = `${textLength * 10}px`;
-            CodeMirrorLine.classList.add("borderRight");
+            console.log("fixedLine", fixedLine);
+            if (!fixedLine.classList.contains("cm-variable")) {
+              console.log("not variable");
+              return;
+            } else {
+              const pointer = document.createElement("span");
+              pointer.className = "pointer";
+              if (!isMobile) pointer.textContent = "You";
+              fixedLine.appendChild(pointer);
+              pointer.style.left = `${textLength * 10}px`;
+              CodeMirrorLine.classList.add("borderRight");
+            }
           }
         }
       });
     }
+
+    return () => {
+      socketRef.current.off(ACTIONS.CODE_CHANGE);
+      socketRef.current.off("Typer");
+      socketRef.current.off("UTILS");
+    };
   }, [socketRef.current]);
 
   const emitUtils = (e) => {

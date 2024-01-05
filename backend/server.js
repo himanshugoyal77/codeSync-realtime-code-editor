@@ -135,6 +135,10 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on(ACTIONS.SYNC_CODE, ({ code, socketId }) => {
+    io.to(socketId).emit(ACTIONS.SYNC_CODE, { code });
+  });
+
   socket.on("Typer", ({ roomId, lineNo }) => {
     console.log(userSocketMap);
     io.to(roomId).emit("Typer", {
@@ -167,8 +171,11 @@ io.on("connection", (socket) => {
     socket.leave();
   });
 });
-
+const deleteMongoColl = async () => {
+  await Job.deleteMany({});
+};
 server.listen(PORT, () => {
+  //deleteMongoColl();
   connectDb();
-  console.log("listening on *:5000");
+  console.log(`listening on *:${PORT}`);
 });

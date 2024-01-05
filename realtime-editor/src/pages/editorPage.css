@@ -48,6 +48,22 @@
   margin-top: 20px;
 }
 
+.moreClients {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: smaller;
+  text-align: center;
+}
+
+.btnWrapper {
+  width: 100%;
+}
+
+.copyBtn {
+  width: 100%;
+}
+
 /* mobile styles */
 
 @media (max-width: 768px) {
@@ -89,5 +105,18 @@
 
   .logoImg {
     height: 50px;
+  }
+
+  .btnWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .copyBtn {
+    margin-top: 20px;
+  }
+  .leaveBtn {
   }
 }

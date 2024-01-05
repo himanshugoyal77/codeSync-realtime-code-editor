@@ -19,10 +19,23 @@ const EditorPage = () => {
   const location = useLocation();
   const { roomId } = useParams();
   const reactNavigate = useNavigate();
+  const codeRef = useRef(null);
 
   const [clients, setClients] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    if (
+      navigator.userAgent.match(/Android/i) ||
+      navigator.userAgent.match(/webOS/i) ||
+      navigator.userAgent.match(/iPhone/i) ||
+      navigator.userAgent.match(/iPad/i) ||
+      navigator.userAgent.match(/iPod/i) ||
+      navigator.userAgent.match(/BlackBerry/i) ||
+      navigator.userAgent.match(/Windows Phone/i)
+    ) {
+      setIsMobile(true);
+    }
     const init = async () => {
       socketRef.current = await initSocket();
       socketRef.current.on("connect_error", (err) => handleErrors(err));
@@ -46,6 +59,10 @@ const EditorPage = () => {
             toast.success(`${username} joined`);
           }
           setClients(clients);
+          socketRef.current.emit(ACTIONS.SYNC_CODE, {
+            code: codeRef.current,
+            socketId,
+          });
         }
       );
 
@@ -69,6 +86,20 @@ const EditorPage = () => {
     return <Navigate to="/" />;
   }
 
+  async function copyRoomId() {
+    try {
+      await navigator.clipboard.writeText(roomId);
+      toast.success("Room id copied to clipboard.");
+    } catch (e) {
+      toast.error("Failed to copy room id.");
+    }
+  }
+
+  function leaveRoom() {
+    socketRef.current.disconnect();
+    reactNavigate("/");
+  }
+
   return (
     <div className="mainWrap">
       <div className="aside">
@@ -79,17 +110,40 @@ const EditorPage = () => {
           <div className="connected">
             <h3 className="hide">Connected</h3>
             <div className="clientsList">
-              {clients.map((client) => (
-                <Client key={client.socketId} username={client.username} />
-              ))}
+              {isMobile && clients.length > 3 ? (
+                <div className="clientsList">
+                  {clients.slice(0, 3).map((client) => (
+                    <Client key={client.socketId} username={client.username} />
+                  ))}
+                  <div className="moreClients">
+                    +{clients.length - 3}
+                    <br />
+                    more
+                  </div>
+                </div>
+              ) : (
+                clients.map((client) => (
+                  <Client key={client.socketId} username={client.username} />
+                ))
+              )}
             </div>
           </div>
         </div>
-        <button className="btn copyBtn hide">Copy Room Id</button>
-        <button className="btn leaveBtn hide">Leave</button>
+        <div className="btnWrapper">
+          <button onClick={copyRoomId} className="btn copyBtn">
+            Copy Room Id
+          </button>
+          <button onClick={leaveRoom} className="btn leaveBtn">
+            Leave
+          </button>
+        </div>
       </div>
       <div className="editorWrap">
-        <Editor socketRef={socketRef} roomId={roomId} />
+        <Editor
+          socketRef={socketRef}
+          roomId={roomId}
+          onCodeChange={(code) => (codeRef.current = code)}
+        />
       </div>
     </div>
   );
