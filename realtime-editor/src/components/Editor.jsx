@@ -377,7 +377,10 @@ const Editor = ({ socketRef, roomId, onCodeChange }) => {
 
   // run code from judge0 api
   const executeCodeJudge0 = async (e) => {
-    console.log("wrCode", wrCode);
+    if (!language) {
+      toast.error("Please select a language");
+      return;
+    }
     const options = {
       method: "POST",
       url: "https://judge0-ce.p.rapidapi.com/submissions",

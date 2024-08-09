@@ -87,3 +87,20 @@ footer a:hover {
   color: #368654;
   border-color: #368654;
 }
+
+.auth-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+button {
+  background: #4aee88;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  font-weight: bold;
+}

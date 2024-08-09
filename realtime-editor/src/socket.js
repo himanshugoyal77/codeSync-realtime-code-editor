@@ -8,5 +8,5 @@ export const initSocket = async () => {
     transports: ["websocket"],
   };
 
-  return io("codesync-realtime-code-editor-production.up.railway.app", options);
+  return io(process.env.REACT_APP_BACKEND_URL, options);
 };
